@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rocks.xmpp.extensions.data.model.DataForm;
 
 public class FcmPushService implements PushService {
 
@@ -33,8 +34,12 @@ public class FcmPushService implements PushService {
         this.configuration = config;
     }
 
+    private static boolean isNullOrEmpty(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
     @Override
-    public boolean push(Target target, boolean highPriority) throws TargetDeviceNotFoundException {
+    public boolean push(Target target, DataForm pushSummary) throws TargetDeviceNotFoundException {
         final String account = target.getDevice();
 
         final String channel =
@@ -51,9 +56,19 @@ public class FcmPushService implements PushService {
         } else {
             collapseKey = null;
         }
-
+        String body = pushSummary.findValue("last-message-body");
+        String title = pushSummary.getTitle();
+        if (isNullOrEmpty(body)) {
+            body = "New Message is here";
+        }
+        if (isNullOrEmpty(title)) {
+            title = "New title";
+        }
         final Message.Builder message =
                 Message.builder()
+                        .setNotification(Notification.builder().setBody(body).setTitle(title).build())
+                        .putData("title", title)
+                        .putData("body", body)
                         .setToken(target.getToken())
                         .setAndroidConfig(
                                 AndroidConfig.builder().setCollapseKey(collapseKey).build())

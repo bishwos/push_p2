@@ -63,7 +63,7 @@ public class PushController {
                                     return iq.createError(Condition.INTERNAL_SERVER_ERROR);
                                 }
                                 try {
-                                    if (pushService.push(target, hasLastMessageBody)) {
+                                    if (pushService.push(target, pushSummary)) {
                                         return iq.createResult();
                                     } else {
                                         return iq.createError(Condition.RECIPIENT_UNAVAILABLE);
