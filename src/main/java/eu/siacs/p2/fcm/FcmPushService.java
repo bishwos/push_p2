@@ -62,7 +62,7 @@ public class FcmPushService implements PushService {
             body = "New Message is here";
         }
         if (isNullOrEmpty(title)) {
-            title = pushSummary.findValue("last-message-sender");
+            title = "New title";
         }
         final Message.Builder message =
                 Message.builder()
