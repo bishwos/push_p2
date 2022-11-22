@@ -16,6 +16,7 @@ import rocks.xmpp.extensions.component.accept.ExternalComponent;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
+import rocks.xmpp.extensions.vcard.temp.VCardManager;
 
 public class P2 {
 
@@ -66,6 +67,7 @@ public class P2 {
                         configuration.host(),
                         configuration.port());
 
+        PushController.vCardManager = externalComponent.getManager(VCardManager.class);
         externalComponent.addIQHandler(Command.class, PushController.commandHandler);
         externalComponent.addIQHandler(PubSub.class, PushController.pubsubHandler);
 

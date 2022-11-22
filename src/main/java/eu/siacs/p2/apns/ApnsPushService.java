@@ -19,6 +19,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 public class ApnsPushService implements PushService {
 
@@ -72,7 +73,7 @@ public class ApnsPushService implements PushService {
     }
 
     @Override
-    public boolean push(final Target target, DataForm pushSummary) {
+    public boolean push(final Target target, DataForm pushSummary, VCard vCard) {
         LOGGER.info("attempt push to APNS (" + target.getToken() + ")");
         final String bundleId = configuration.bundleId();
         if (Strings.isNullOrEmpty(bundleId)) {

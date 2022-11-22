@@ -111,36 +111,36 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.17.7</version>
-                <configuration>
-                    <java>
-                        <googleJavaFormat>
-                            <version>1.8</version>
-                            <style>AOSP</style>
-                            <reflowLongStrings>true</reflowLongStrings>
-                        </googleJavaFormat>
-                    </java>
-                    <pom>
-                        <sortPom>
-                            <nrOfIndentSpace>4</nrOfIndentSpace>
-                            <!-- same as google java format AOSP -->
-                        </sortPom>
-                    </pom>
-                </configuration>
-                <executions>
-                    <execution>
-                        <!-- Runs in compile phase to fail fast in case of formatting issues.-->
-                        <id>spotless-check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>compile</phase>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.diffplug.spotless</groupId>-->
+<!--                <artifactId>spotless-maven-plugin</artifactId>-->
+<!--                <version>2.17.7</version>-->
+<!--                <configuration>-->
+<!--                    <java>-->
+<!--                        <googleJavaFormat>-->
+<!--                            <version>1.8</version>-->
+<!--                            <style>AOSP</style>-->
+<!--                            <reflowLongStrings>true</reflowLongStrings>-->
+<!--                        </googleJavaFormat>-->
+<!--                    </java>-->
+<!--                    <pom>-->
+<!--                        <sortPom>-->
+<!--                            <nrOfIndentSpace>4</nrOfIndentSpace>-->
+<!--                            &lt;!&ndash; same as google java format AOSP &ndash;&gt;-->
+<!--                        </sortPom>-->
+<!--                    </pom>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        &lt;!&ndash; Runs in compile phase to fail fast in case of formatting issues.&ndash;&gt;-->
+<!--                        <id>spotless-check</id>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                        <phase>compile</phase>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

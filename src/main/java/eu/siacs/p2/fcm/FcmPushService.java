@@ -7,11 +7,14 @@ import com.google.firebase.messaging.*;
 import eu.siacs.p2.PushService;
 import eu.siacs.p2.TargetDeviceNotFoundException;
 import eu.siacs.p2.pojo.Target;
+
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 public class FcmPushService implements PushService {
 
@@ -39,7 +42,7 @@ public class FcmPushService implements PushService {
     }
 
     @Override
-    public boolean push(Target target, DataForm pushSummary) throws TargetDeviceNotFoundException {
+    public boolean push(Target target, DataForm pushSummary, VCard vCard) throws TargetDeviceNotFoundException {
         final String account = target.getDevice();
 
         final String channel =
@@ -47,8 +50,10 @@ public class FcmPushService implements PushService {
                         ? null
                         : target.getChannel();
         final String collapseKey;
+
+        //collapsekey not working
         if (configuration.collapse()) {
-            if (channel == null) {
+            if (channel == null || channel.isEmpty()) {
                 collapseKey = account.substring(0, 6);
             } else {
                 collapseKey = channel.substring(0, 6);
@@ -62,17 +67,28 @@ public class FcmPushService implements PushService {
             body = "New Message is here";
         }
         if (isNullOrEmpty(title)) {
-            title = pushSummary.findValue("last-message-sender");
+            title = vCard.getFormattedName();
         }
+        System.out.println(title);
+        AndroidNotification notification = AndroidNotification.builder()
+                .setBody(body)
+                .setTitle(title)
+//                .setImage(vCard.getUrl().toString())
+                .setDefaultSound(true)
+                .setSound("default")
+                .setIcon(vCard.getUrl().toString())
+                .setDefaultVibrateTimings(true)
+                .build();
         final Message.Builder message =
                 Message.builder()
                         .setNotification(
                                 Notification.builder().setBody(body).setTitle(title).build())
                         .putData("title", title)
                         .putData("body", body)
+//                        .putData("imageUrl", vCard.getUrl().toString())
                         .setToken(target.getToken())
                         .setAndroidConfig(
-                                AndroidConfig.builder().setCollapseKey(collapseKey).build())
+                                AndroidConfig.builder().setCollapseKey(collapseKey).setNotification(notification).build())
                         .putData("account", account);
         if (channel != null) {
             message.putData("channel", channel);

@@ -7,6 +7,7 @@ import eu.siacs.p2.pojo.Target;
 import eu.siacs.p2.xmpp.extensions.push.Notification;
 import java.util.*;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -14,11 +15,16 @@ import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
+import rocks.xmpp.extensions.vcard.temp.VCardManager;
+import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 public class PushController {
 
     private static final String COMMAND_NODE_REGISTER_PREFIX = "register-push-";
     private static final String COMMAND_NODE_UNREGISTER_PREFIX = "unregister-push-";
+
+    public static VCardManager vCardManager;
 
     public static IQHandler commandHandler =
             (iq -> {
@@ -44,6 +50,16 @@ public class PushController {
                     final String secret =
                             publishOptions != null ? publishOptions.findValue("secret") : null;
                     final DataForm pushSummary = findPushSummary(publish);
+                    VCard vCard = new VCard();
+                    if (pushSummary != null) {
+                        Jid sender = pushSummary.findValueAsJid("last-message-sender");
+                        try {
+                            vCard = vCardManager.getVCard(sender).getResult();
+                        } catch (XmppException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
                     final boolean hasLastMessageBody =
                             pushSummary != null
                                     && !isNullOrEmpty(pushSummary.findValue("last-message-body"));
@@ -63,7 +79,7 @@ public class PushController {
                                     return iq.createError(Condition.INTERNAL_SERVER_ERROR);
                                 }
                                 try {
-                                    if (pushService.push(target, pushSummary)) {
+                                    if (pushService.push(target, pushSummary, vCard)) {
                                         return iq.createResult();
                                     } else {
                                         return iq.createError(Condition.RECIPIENT_UNAVAILABLE);
