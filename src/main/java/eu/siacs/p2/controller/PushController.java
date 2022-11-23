@@ -5,6 +5,9 @@ import eu.siacs.p2.persistance.TargetStore;
 import eu.siacs.p2.pojo.Service;
 import eu.siacs.p2.pojo.Target;
 import eu.siacs.p2.xmpp.extensions.push.Notification;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
@@ -50,15 +53,6 @@ public class PushController {
                     final String secret =
                             publishOptions != null ? publishOptions.findValue("secret") : null;
                     final DataForm pushSummary = findPushSummary(publish);
-                    VCard vCard = new VCard();
-                    if (pushSummary != null) {
-                        Jid sender = pushSummary.findValueAsJid("last-message-sender");
-                        try {
-                            vCard = vCardManager.getVCard(sender).getResult();
-                        } catch (XmppException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
 
                     final boolean hasLastMessageBody =
                             pushSummary != null
@@ -79,6 +73,17 @@ public class PushController {
                                     return iq.createError(Condition.INTERNAL_SERVER_ERROR);
                                 }
                                 try {
+                                    VCard vCard = new VCard();
+                                    vCard.setFormattedName("");
+                                    vCard.setUrl(new URL("https://demo.realhrsoft.com.np/media/cache/d4/f5/d4f502d370ffc969713bdb48c8f51d2b.png"));
+                                    if (pushSummary != null) {
+                                        Jid sender = pushSummary.findValueAsJid("last-message-sender");
+                                        try {
+                                            vCard = vCardManager.getVCard(sender).getResult();
+                                        } catch (XmppException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
                                     if (pushService.push(target, pushSummary, vCard)) {
                                         return iq.createResult();
                                     } else {
@@ -86,6 +91,8 @@ public class PushController {
                                     }
                                 } catch (TargetDeviceNotFoundException e) {
                                     return iq.createError(Condition.ITEM_NOT_FOUND);
+                                } catch (MalformedURLException e) {
+                                    return iq.createError(Condition.UNDEFINED_CONDITION);
                                 }
 
                             } else {
