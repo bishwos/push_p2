@@ -77,8 +77,8 @@ public class PushController {
                                     vCard.setFormattedName("");
                                     vCard.setUrl(new URL("https://demo.realhrsoft.com.np/media/cache/d4/f5/d4f502d370ffc969713bdb48c8f51d2b.png"));
                                     if (pushSummary != null) {
-                                        Jid sender = pushSummary.findValueAsJid("last-message-sender");
                                         try {
+                                            Jid sender = pushSummary.findValueAsJid("last-message-sender");
                                             vCard = vCardManager.getVCard(sender).getResult();
                                         } catch (XmppException e) {
                                             e.printStackTrace();
