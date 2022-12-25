@@ -5,4 +5,4 @@ WORKDIR /root/p2
 RUN mvn install
 RUN mvn package
 
-CMD ["java", "-jar", "/root/push_p2/target/p2-0.3.2.jar", "-c", "/root/config/config.json"]
+CMD ["java", "-jar", "/root/p2/target/p2-0.3.2-shaded.jar", "-c", "/root/config/config.json"]
