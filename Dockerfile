@@ -1,4 +1,4 @@
-FROM maven:3-eclipse-temurin-11-alpine
+FROM maven:3-eclipse-temurin-11
 
 COPY . /root/p2
 WORKDIR /root/p2
