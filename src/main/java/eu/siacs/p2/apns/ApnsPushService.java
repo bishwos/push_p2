@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 public class ApnsPushService implements PushService {
 
@@ -68,12 +66,8 @@ public class ApnsPushService implements PushService {
         this.httpInterface = retrofit.create(ApnsHttpInterface.class);
     }
 
-    private static boolean isNullOrEmpty(String value) {
-        return value == null || value.trim().isEmpty();
-    }
-
     @Override
-    public boolean push(final Target target, DataForm pushSummary, VCard vCard) {
+    public boolean push(final Target target, final boolean highPriority) {
         LOGGER.info("attempt push to APNS (" + target.getToken() + ")");
         final String bundleId = configuration.bundleId();
         if (Strings.isNullOrEmpty(bundleId)) {
@@ -82,8 +76,7 @@ public class ApnsPushService implements PushService {
         }
         try {
             final Notification notification =
-                    pushSummary != null
-                            && !isNullOrEmpty(pushSummary.findValue("last-message-body"))
+                    highPriority
                             ? Notification.createAlert()
                             : Notification.createContentAvailable();
             final Response<Void> response =

@@ -2,9 +2,15 @@ package eu.siacs.p2;
 
 import com.google.common.base.Strings;
 import eu.siacs.p2.controller.PushController;
+import eu.siacs.p2.service.UserDirectorySearch;
+import rocks.xmpp.extensions.muc.MultiUserChatManager;
+import rocks.xmpp.extensions.search.SearchManager;
+import rocks.xmpp.extensions.search.model.Search;
 import eu.siacs.p2.xmpp.extensions.push.Notification;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.time.Duration;
+
 import org.apache.commons.cli.*;
 import org.conscrypt.Conscrypt;
 import rocks.xmpp.core.XmppException;
@@ -16,7 +22,6 @@ import rocks.xmpp.extensions.component.accept.ExternalComponent;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
-import rocks.xmpp.extensions.vcard.temp.VCardManager;
 
 public class P2 {
 
@@ -54,6 +59,8 @@ public class P2 {
         final XmppSessionConfiguration.Builder builder = XmppSessionConfiguration.builder();
 
         builder.extensions(Extension.of(Notification.class));
+        builder.extensions(Extension.of(Search.class));
+        builder.defaultResponseTimeout(Duration.ofSeconds(10));
 
         if (configuration.debug()) {
             builder.debugger(ConsoleDebugger.class);
@@ -67,9 +74,12 @@ public class P2 {
                         configuration.host(),
                         configuration.port());
 
-        PushController.vCardManager = externalComponent.getManager(VCardManager.class);
         externalComponent.addIQHandler(Command.class, PushController.commandHandler);
         externalComponent.addIQHandler(PubSub.class, PushController.pubsubHandler);
+
+        externalComponent.addIQHandler(Search.class, UserDirectorySearch.searchHandler);
+        UserDirectorySearch.searchManager = externalComponent.getManager(SearchManager.class);
+        UserDirectorySearch.muc = externalComponent.getManager(MultiUserChatManager.class);
 
         externalComponent.getManager(ServiceDiscoveryManager.class).setEnabled(false);
         externalComponent.disableFeature(Muc.NAMESPACE);

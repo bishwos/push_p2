@@ -14,6 +14,10 @@ public class Target {
     private String node;
     private String secret;
 
+    private String sender;
+
+    private String body;
+
     private Target(
             Service service,
             String device,
@@ -83,5 +87,21 @@ public class Target {
 
     public Jid getDomain() {
         return domain;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 }
