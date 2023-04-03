@@ -5,7 +5,7 @@ An [XEP-0357: Push Notifications](https://xmpp.org/extensions/xep-0357.html) app
 
 Commercial support for running p2 is available from the developer [Daniel Gultsch](https://gultsch.de).
 
-## Background
+## Background 
 Due to restrictions in Firebase Cloud Messaging (and most other push services), only the developer can create push notifications for their apps. For this reason a user’s server wouldn’t be able to wake up a user’s device directly but has to proxy that wake up signal through the infrastructure of the app developer.
 
 Here is a quick description of how this relationship is set up.
