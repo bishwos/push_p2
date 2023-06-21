@@ -2,9 +2,6 @@ package eu.siacs.p2;
 
 import com.google.common.base.Strings;
 import eu.siacs.p2.controller.PushController;
-import eu.siacs.p2.service.UserDirectorySearch;
-import rocks.xmpp.extensions.muc.MultiUserChatManager;
-import rocks.xmpp.extensions.search.SearchManager;
 import rocks.xmpp.extensions.search.model.Search;
 import eu.siacs.p2.xmpp.extensions.push.Notification;
 import java.security.SecureRandom;
@@ -20,7 +17,6 @@ import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.component.accept.ExternalComponent;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 public class P2 {
@@ -77,12 +73,7 @@ public class P2 {
         externalComponent.addIQHandler(Command.class, PushController.commandHandler);
         externalComponent.addIQHandler(PubSub.class, PushController.pubsubHandler);
 
-        externalComponent.addIQHandler(Search.class, UserDirectorySearch.searchHandler);
-        UserDirectorySearch.searchManager = externalComponent.getManager(SearchManager.class);
-        UserDirectorySearch.muc = externalComponent.getManager(MultiUserChatManager.class);
-
         externalComponent.getManager(ServiceDiscoveryManager.class).setEnabled(false);
-        externalComponent.disableFeature(Muc.NAMESPACE);
 
         connectAndKeepRetrying(externalComponent);
     }

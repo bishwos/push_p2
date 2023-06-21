@@ -4,10 +4,8 @@ import eu.siacs.p2.*;
 import eu.siacs.p2.persistance.TargetStore;
 import eu.siacs.p2.pojo.Service;
 import eu.siacs.p2.pojo.Target;
-import eu.siacs.p2.service.UserDirectorySearch;
 import eu.siacs.p2.xmpp.extensions.push.Notification;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -17,7 +15,6 @@ import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
-import rocks.xmpp.extensions.search.SearchManager;
 
 public class PushController {
 
@@ -69,14 +66,6 @@ public class PushController {
                                 try {
                                     if (pushSummary != null && pushSummary.findValue("last-message-body") != null) {
                                         String sender = pushSummary.findValue("last-message-sender");
-//                                        try {
-//                                            String senderName = UserDirectorySearch.getUser(Jid.of(sender)).get().getName();
-//                                            if (senderName != null) {
-//                                                sender = senderName;
-//                                            }
-//                                        } catch (Exception e) {
-//                                            e.printStackTrace();
-//                                        }
                                         target.setSender(sender);
                                         target.setBody(pushSummary.findValue("last-message-body"));
                                         if (pushService.push(target, hasLastMessageBody)) {
