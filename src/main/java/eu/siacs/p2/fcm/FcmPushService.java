@@ -71,8 +71,8 @@ public class FcmPushService implements PushService {
                         .setNotification(
                                 Notification.builder().setBody(body).setTitle(sender).build())
                         .setToken(target.getToken())
-                        .putData("title", target.getSender())
-                        .putData("body", target.getBody())
+//                        .putData("title", target.getSender())
+//                        .putData("body", target.getBody())
                         .putData("click_action", "FLUTTER_NOTIFICATION_CLICK")
                         .setAndroidConfig(
                                 AndroidConfig.builder().setCollapseKey(collapseKey).setNotification(notification).build())
