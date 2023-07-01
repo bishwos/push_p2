@@ -88,7 +88,7 @@ public class PushController {
                         return iq.createError(Condition.FORBIDDEN);
                     }
                 }
-                return iq.createError(Condition.BAD_REQUEST);
+                return iq.createError(Condition.RESOURCE_CONSTRAINT);
             });
 
 
