@@ -96,3 +96,4 @@ The hash can then be used by Conversations to determine which of a number of acc
 ### Further optimizations
 
 An alternative design omits registration with the app server and instead stores the token on the user’s server. For each push the XMPP server includes all information the app server needs to execute the push. The app server becomes a true proxy that doesn’t require its own database.
+
