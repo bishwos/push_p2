@@ -16,7 +16,6 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.component.accept.ExternalComponent;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 public class P2 {
@@ -72,9 +71,7 @@ public class P2 {
 
         externalComponent.addIQHandler(Command.class, PushController.commandHandler);
         externalComponent.addIQHandler(PubSub.class, PushController.pubsubHandler);
-
-        externalComponent.getManager(ServiceDiscoveryManager.class).setEnabled(false);
-
+        Directory.init(externalComponent);
         connectAndKeepRetrying(externalComponent);
     }
 

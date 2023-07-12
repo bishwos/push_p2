@@ -4,11 +4,14 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.*;
+import eu.siacs.p2.Directory;
 import eu.siacs.p2.PushService;
 import eu.siacs.p2.TargetDeviceNotFoundException;
 import eu.siacs.p2.pojo.Target;
+
 import java.io.FileInputStream;
 import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,41 +44,37 @@ public class FcmPushService implements PushService {
                 target.getChannel() == null || target.getChannel().isEmpty()
                         ? null
                         : target.getChannel();
-        final String collapseKey;
-        if (configuration.collapse()) {
-            if (channel == null) {
-                collapseKey = account.substring(0, 6);
-            } else {
-                collapseKey = channel.substring(0, 6);
-            }
-        } else {
-            collapseKey = null;
-        }
+
 
         String body = target.getBody();
         String sender = target.getSender();
+        String senderName = Directory.getName(sender);
+        String profilePicture = Directory.getProfilePicture(sender);
 
         //TODO: set channel using target.getChannel()
-        AndroidNotification notification = AndroidNotification.builder()
+        AndroidNotification.Builder notificationBuilder = AndroidNotification.builder()
                 .setBody(target.getBody())
-                .setTitle(sender)
-//                .setImage(vCard.getUrl().toString())
+                .setTitle(senderName)
                 .setDefaultSound(true)
                 .setSound("default")
-//                .setIcon(vCard.getUrl().toString())
-                .setDefaultVibrateTimings(true)
-                .build();
+                .setDefaultVibrateTimings(true);
+
+        if (profilePicture != null) {
+            notificationBuilder.setImage(profilePicture);
+            notificationBuilder.setIcon(profilePicture);
+        }
+        AndroidNotification notification = notificationBuilder.build();
+
 
         final Message.Builder message =
                 Message.builder()
                         .setNotification(
-                                Notification.builder().setBody(body).setTitle(sender).build())
+                                Notification.builder().setBody(body).setTitle(senderName).build())
                         .setToken(target.getToken())
-//                        .putData("title", target.getSender())
-//                        .putData("body", target.getBody())
+                        .putData("from_jid", target.getSender())
                         .putData("click_action", "FLUTTER_NOTIFICATION_CLICK")
                         .setAndroidConfig(
-                                AndroidConfig.builder().setCollapseKey(collapseKey).setNotification(notification).build())
+                                AndroidConfig.builder().setNotification(notification).build())
                         .putData("account", account);
         if (channel != null) {
             message.putData("channel", channel);
