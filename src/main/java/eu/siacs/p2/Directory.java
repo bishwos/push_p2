@@ -39,9 +39,6 @@ public class Directory {
     public static String getName(String jid) {
         Jid from = Jid.of(jid);
         String bareJid = from.asBareJid().toString();
-        if (unknowns.contains(bareJid)) {
-            return jid;
-        }
         if (bareJid.contains("@conference")) {
             if (!rooms.containsKey(bareJid)) {
                 updatePublicRooms(from.getDomain());
@@ -68,9 +65,6 @@ public class Directory {
     public static String getProfilePicture(String jid) {
         Jid of = Jid.of(jid);
         String bareJid = of.asBareJid().toString();
-        if (unknowns.contains(bareJid)) {
-            return null;
-        }
         if (bareJid.contains("@conference")) {
             return null;
         }

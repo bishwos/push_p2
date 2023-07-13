@@ -53,38 +53,50 @@ public class FcmPushService implements PushService {
         String profilePicture = Directory.getProfilePicture(sender);
 
         //TODO: set channel using target.getChannel()
-        AndroidNotification.Builder notificationBuilder = AndroidNotification.builder()
+        AndroidNotification.Builder androidNotification = AndroidNotification.builder()
                 .setBody(target.getBody())
                 .setTitle(senderName)
                 .setDefaultSound(true)
                 .setSound("default")
+                .setClickAction("FLUTTER_NOTIFICATION_CLICK")
+                .setIcon("launch_background")
                 .setDefaultVibrateTimings(true);
 
+        Notification.Builder notification = Notification.builder();
+        notification.setTitle(senderName);
+        notification.setBody(body);
+
         if (profilePicture != null) {
-            notificationBuilder.setIcon(profilePicture);
+            androidNotification.setImage(profilePicture);
+            notification.setImage(profilePicture);
         }
 
         if (isLink(body) && isImage(body)) {
-            notificationBuilder.setImage(body);
-            body = "sent an image";
+            notification.setImage(body).setBody("sent an image");
+            androidNotification.setImage(body).setBody("sent an image");
         }
 
         if (isLink(body) && !isImage(body)) {
-            body = "sent an attachment";
+            notification.setBody("sent a attachment");
+            androidNotification.setBody("sent an attachment");
         }
 
-        AndroidNotification notification = notificationBuilder.build();
+        if (body.contains("invites you to the room")) {
+            String inviter = body.split(" ")[0];
+            String inviterName = Directory.getName(inviter);
+            notification.setBody(inviterName + " added you to this group");
+            androidNotification.setBody(inviterName + " added you to this group");
+        }
 
 
         final Message.Builder message =
                 Message.builder()
-                        .setNotification(
-                                Notification.builder().setBody(body).setTitle(senderName).build())
+                        .setNotification(notification.build())
                         .setToken(target.getToken())
                         .putData("from_jid", target.getSender())
                         .putData("click_action", "FLUTTER_NOTIFICATION_CLICK")
                         .setAndroidConfig(
-                                AndroidConfig.builder().setNotification(notification).build())
+                                AndroidConfig.builder().setNotification(androidNotification.build()).build())
                         .putData("account", account);
         if (channel != null) {
             message.putData("channel", channel);
