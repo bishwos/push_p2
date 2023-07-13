@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rocks.xmpp.addr.Jid;
 
 public class FcmPushService implements PushService {
 
@@ -60,9 +61,18 @@ public class FcmPushService implements PushService {
                 .setDefaultVibrateTimings(true);
 
         if (profilePicture != null) {
-            notificationBuilder.setImage(profilePicture);
             notificationBuilder.setIcon(profilePicture);
         }
+
+        if (isLink(body) && isImage(body)) {
+            notificationBuilder.setImage(body);
+            body = "sent an image";
+        }
+
+        if (isLink(body) && !isImage(body)) {
+            body = "sent an attachment";
+        }
+
         AndroidNotification notification = notificationBuilder.build();
 
 
@@ -80,6 +90,15 @@ public class FcmPushService implements PushService {
             message.putData("channel", channel);
         }
         return push(message.build());
+    }
+
+    boolean isLink(String body) {
+        //TODO: check if body has domain
+        return body.startsWith("http://") || body.startsWith("https://") && !body.contains(" ") && body.contains("/upload");
+    }
+
+    boolean isImage(String body) {
+        return body.endsWith(".jpg") || body.endsWith(".jpeg") || body.endsWith(".png") || body.endsWith(".gif");
     }
 
     private boolean push(Message message) throws TargetDeviceNotFoundException {
