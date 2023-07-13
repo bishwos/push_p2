@@ -69,11 +69,15 @@ public class Directory {
             return null;
         }
         Contact contact = directory.get(bareJid);
+        if (contact == null) {
+            return null;
+        }
         return contact.getProfile();
     }
 
 
     private static void updateDirectory(String domain) {
+        System.out.println("Updating directory for " + domain);
         DataForm.Field hidden = DataForm
                 .Field
                 .builder()
@@ -123,6 +127,7 @@ public class Directory {
         if (publicRoomsUpdated) {
             return;
         }
+        System.out.println("Updating public rooms");
         try {
             ItemNode result = manager.discoverItems(Jid.of(domain)).getResult();
             List<Item> items = result.getItems();
@@ -138,6 +143,7 @@ public class Directory {
     }
 
     private static void getRoomInfo(Jid room) {
+        System.out.println("Getting room info");
         try {
             InfoNode result = manager.discoverInformation(room.asBareJid()).getResult();
             for (Identity identity : result.getIdentities()) {

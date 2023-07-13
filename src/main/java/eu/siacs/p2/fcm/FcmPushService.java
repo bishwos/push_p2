@@ -11,6 +11,7 @@ import eu.siacs.p2.pojo.Target;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,16 +89,29 @@ public class FcmPushService implements PushService {
             androidNotification.setBody(inviterName + " added you to this group");
         }
 
+        HashMap<String, String> data = new HashMap<>();
+        data.put("from_jid", target.getSender());
+        data.put("click_action", "FLUTTER_NOTIFICATION_CLICK");
+
+        HashMap<String, Object> apnsData = new HashMap<>(data);
+
 
         final Message.Builder message =
                 Message.builder()
                         .setNotification(notification.build())
                         .setToken(target.getToken())
-                        .putData("from_jid", target.getSender())
-                        .putData("click_action", "FLUTTER_NOTIFICATION_CLICK")
+                        .putAllData(data)
                         .setAndroidConfig(
-                                AndroidConfig.builder().setNotification(androidNotification.build()).build())
-                        .putData("account", account);
+                                AndroidConfig.builder()
+                                        .putAllData(data)
+                                        .setNotification(androidNotification.build())
+                                        .build()
+                        )
+                        .putData("account", account)
+                        .setApnsConfig(
+                                ApnsConfig.builder().setAps(Aps.builder().putAllCustomData(apnsData)
+                                        .build()).putAllCustomData(apnsData).build())
+                ;
         if (channel != null) {
             message.putData("channel", channel);
         }
